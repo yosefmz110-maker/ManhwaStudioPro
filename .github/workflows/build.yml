@@ -15,6 +15,17 @@ jobs:
       - name: Unzip project
         run: unzip -o *.zip -d project
 
+      - name: Allow AQ API keys
+        run: |
+          python3 -c "
+          import glob, re
+          for f in glob.glob('project/**/*.html', recursive=True) + glob.glob('project/**/*.js', recursive=True):
+              txt = open(f, encoding='utf-8', errors='ignore').read()
+              txt = txt.replace(\"startsWith('AIza')\", \"startsWith('')\").replace('startsWith(\"AIza\")', 'startsWith(\"\")')
+              txt = re.sub(r'\^AIza', '^(AIza|AQ\\\\.)', txt)
+              open(f, 'w', encoding='utf-8').write(txt)
+          "
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
